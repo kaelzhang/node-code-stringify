@@ -61,7 +61,7 @@ The `space` argument act just like the third parameter of `JSON.stringify`.
 
 ## Known Issues
 
-- Code-this can't deal with recursive object or array SO FAR.
+- Code-this can't deal with recursive objects or arrays SO FAR.
 - `space` parameter could not affect the code indent inside functions.
 - Code-this could not deal with variable scope so far.
 
