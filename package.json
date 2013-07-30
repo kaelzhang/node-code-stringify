@@ -1,11 +1,18 @@
 {
   "name": "code-this",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Code-this is node.js module that converts JavaScript variables into source codes. Unlike `JSON.stringify`, code-this also deals with reference(object) types of variables.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [
+    "strinify",
+    "json-strinify",
+    "codify",
+    "code-generator",
+    "code"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/kaelzhang/code-this.git"
