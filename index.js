@@ -69,7 +69,7 @@ function object_to_code(object, replacer, space, indent) {
 
     code = code.join(joiner);
 
-    return code ? start + code + end : {};
+    return code ? start + code + end : '{}';
 };
 
 
