@@ -88,7 +88,7 @@ function value_to_code(value, replacer, space, indent) {
         return 'null';
 
     }else if(type === 'number'){
-        return value;
+        return String(value);
 
     }else if(type === 'string'){
         return string_to_code(value);
@@ -131,7 +131,7 @@ function array_to_code(array, replacer, space, indent){
     var value;
 
     // Never use any iterators of Array, such as .reduce(), .forEach(), etc,
-    // 'coz those method will never iterate unset items of array
+    // 'coz those method will never iterate unset items of an array
     for(; i < length; i ++){
         value = array[i];
 

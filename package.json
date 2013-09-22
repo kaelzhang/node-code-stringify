@@ -21,5 +21,9 @@
   "license": "BSD",
   "bugs": {
     "url": "https://github.com/kaelzhang/code-this/issues"
+  },
+  "devDependencies": {
+    "mocha": "~1.13.0",
+    "chai": "~1.8.0"
   }
 }

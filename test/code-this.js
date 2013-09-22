@@ -1,7 +1,7 @@
 'use strict';
 
-var code = require('code-this');
-
+var code = require('..');
+var expect = require('chai').expect;
 
 var obj = {
     a: 1,
@@ -16,26 +16,71 @@ var obj = {
 }
 
 
-var parsed = code(obj, function (key, value) {
-    switch(key){
-        case 'f': 
-            return value;
-        case 'g':
-            return '1';
-        case 'h':
-            return;
-        case 'i':
-            return [1, 2, 3];
-        case '0':
-            return;
+describe("primitive types", function(){
+    it("number", function(){
+        var a = 1;
+        expect( code(a) ).to.equal('1');
+    });
 
-        default:
-            return value;
-    }
+    describe("string", function(){
+        it("no quotes", function(){
+            var a = 'a';
+            expect( code(a) ).to.equal("'a'");
+        });
 
+        it("with double quotes", function(){
+            var a = '"a"';
+            expect( code(a) ).to.equal("'\"a\"'");
+        });
 
-}, 4);
+        it("with single quotes", function(){
+            var a = "'a'";
+            expect( code(a) ).to.equal("'\\'a\\''");
+        });
+    });
 
-console.log( parsed );
+    it("boolean", function(){
+        expect(code(true)).to.equal('true');
+        expect(code(false)).to.equal('false');
+    });
+});
 
-console.log( require('util').inspect(obj, {depth: 100}) )
+describe("reference types", function(){
+    describe("arrays of primitive types", function(){
+        it("no indent", function(){
+            expect(code([1, '2', true])).to.equal("[1,'2',true]");
+        });
+
+        it("with indents", function(){
+            expect(code([1, '2', true], null, 4)).to.equal("[\n    1,\n    '2',\n    true\n]");
+        });
+    });
+
+    it("functions", function(){
+        expect(code(function(a){return a;})).to.equal('function (a){return a;}');
+    });
+
+    it("regexp", function(){
+        expect(code(/abc/)).to.equal('/abc/'); 
+    });
+
+    describe("objects", function(){
+        it("no indent", function(){
+            expect(code({a:1,b:true})).to.equal("{'a':1,'b':true}");
+        });
+
+        it("with indents", function(){
+            expect(code({a:1,b:true}, null, 4)).to.equal("{\n    'a': 1,\n    'b': true\n}");
+        });
+    });
+});
+
+describe("mixtures", function(){
+    it("array of objects", function(){
+        expect(code([1,{a:1}])).to.equal("[1,{'a':1}]");
+    });
+    it("object contains arrays", function(){
+        expect(code({a:[1,'a']})).to.equal("{'a':[1,'a']}");
+    });
+});
+
