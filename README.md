@@ -1,4 +1,5 @@
 # Code-this
+![travis-status](https://travis-ci.org/kaelzhang/code-this.png)
 
 Code-this is node.js module that converts JavaScript variables into source codes. 
 
