@@ -1,9 +1,8 @@
 [![Build Status](https://travis-ci.org/kaelzhang/code-this.png?branch=master)](https://travis-ci.org/kaelzhang/code-this)
-[![Coverage Status](https://coveralls.io/repos/kaelzhang/code-this/badge.png)](https://coveralls.io/r/kaelzhang/code-this)
 
 # Code-this
 
-Code-this is node.js module that converts JavaScript variables into source codes. 
+Code-this is the node.js module that converts JavaScript variables into source codes. 
 
 Unlike `JSON.stringify`, code-this also deals with reference(object) types of variables.
 
@@ -37,7 +36,7 @@ require('fs').writeFileSync(
 );
 ```
 
-Then 'output.js' will be look like:
+Then 'output.js' will look like:
 
 ```js
 module.exports = {
@@ -55,11 +54,11 @@ The subject to be converted
 
 ##### replacer `function(key, value)`
 
-The `replacer` argument act just like the second parameter of `JSON.stringify`.
+The `replacer` argument acts just like the second parameter of `JSON.stringify`.
 
 ##### space `number`
 
-The `space` argument act just like the third parameter of `JSON.stringify`.
+The `space` argument acts just like the third parameter of `JSON.stringify`.
 
 
 ## Known Issues
