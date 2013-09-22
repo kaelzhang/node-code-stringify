@@ -1,6 +1,7 @@
-# Code-this
 [![Build Status](https://travis-ci.org/kaelzhang/code-this.png?branch=master)](https://travis-ci.org/kaelzhang/code-this)
 [![Coverage Status](https://coveralls.io/repos/kaelzhang/code-this/badge.png)](https://coveralls.io/r/kaelzhang/code-this)
+
+# Code-this
 
 Code-this is node.js module that converts JavaScript variables into source codes. 
 
