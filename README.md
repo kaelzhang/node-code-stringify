@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/kaelzhang/code-this.png?branch=master)](https://travis-ci.org/kaelzhang/code-this)
+[![Build Status](https://travis-ci.org/kaelzhang/node-code-this.png?branch=master)](https://travis-ci.org/kaelzhang/node-code-this)
 
 # Code-this
 
