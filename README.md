@@ -1,4 +1,6 @@
+[![NPM version](https://badge.fury.io/js/code-this.png)](http://badge.fury.io/js/code-this)
 [![Build Status](https://travis-ci.org/kaelzhang/node-code-this.png?branch=master)](https://travis-ci.org/kaelzhang/node-code-this)
+[![Dependency Status](https://gemnasium.com/kaelzhang/node-code-this.png)](https://gemnasium.com/kaelzhang/node-code-this)
 
 # Code-this
 
