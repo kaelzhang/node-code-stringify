@@ -1,6 +1,8 @@
 
 'use strict';
 
+module.exports = code_this;
+
 var node_util = require('util');
 
 var QUOTE = '\'';
@@ -8,6 +10,38 @@ var PRE_CURLY_BRANKET = '{';
 var SUF_CURLY_BRANKET = '}';
 var PRE_BRANKET = '[';
 var SUF_BRANKET = ']';
+
+code_this.QUOTE = QUOTE;
+
+
+function code_this(value, replacer, space, indent) {
+    var type = typeof value;
+
+    if(value === undefined){
+        return 'undefined';
+    
+    }else if(value === null){
+        return 'null';
+
+    }else if(type === 'number'){
+        return String(value);
+
+    }else if(type === 'string'){
+        return string_to_code(value);
+    
+    }else if(type === 'boolean'){
+        return value ? 'true' : 'false';
+    
+    }else if(type === 'function' || node_util.isRegExp(value)){
+        return value.toString();
+    
+    }else if(node_util.isArray(value)){
+        return array_to_code(value, replacer, space, indent);
+    
+    }else{
+        return object_to_code(value, replacer, space, indent);
+    }
+}
 
 
 function create_spaces(n){
@@ -62,7 +96,7 @@ function object_to_code(object, replacer, space, indent) {
             code.push(
                 string_to_code(key) + 
                 ':' + key_value_joiner + 
-                value_to_code(value, replacer, space, space + indent) 
+                code_this(value, replacer, space, space + indent) 
             );
         }
     }
@@ -74,39 +108,8 @@ function object_to_code(object, replacer, space, indent) {
 
 
 function string_to_code(string){
-    return QUOTE + string.replace(/'/g, '\\\'') + QUOTE;
+    return code_this.QUOTE + string.replace(/'/g, '\\\'') + code_this.QUOTE;
 };
-
-
-function value_to_code(value, replacer, space, indent) {
-    var type = typeof value;
-
-    if(value === undefined){
-        return 'undefined';
-    
-    }else if(value === null){
-        return 'null';
-
-    }else if(type === 'number'){
-        return String(value);
-
-    }else if(type === 'string'){
-        return string_to_code(value);
-    
-    }else if(type === 'boolean'){
-        return value ? 'true' : 'false';
-    
-    }else if(type === 'function' || node_util.isRegExp(value)){
-        return value.toString();
-    
-    }else if(node_util.isArray(value)){
-        return array_to_code(value, replacer, space, indent);
-    
-    }else{
-        return object_to_code(value, replacer, space, indent);
-    }
-}
-
 
 
 // @param {Array} array
@@ -145,13 +148,12 @@ function array_to_code(array, replacer, space, indent){
             }
         }
 
-        code.push( value_to_code(value, replacer, space, indent + space) );
+        code.push( code_this(value, replacer, space, indent + space) );
     }
 
     code = code.join(joiner);
 
-    return code ? start + code + end : [];
+    return code ? start + code + end : '[]';
 }
 
 
-module.exports = value_to_code;

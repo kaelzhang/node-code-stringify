@@ -54,6 +54,11 @@ describe("reference types", function(){
         it("with indents", function(){
             expect(code([1, '2', true], null, 4)).to.equal("[\n    1,\n    '2',\n    true\n]");
         });
+
+        it("empty array", function(){
+            expect(code([])).to.equal('[]');
+            expect(code({a:[]})).to.equal("{'a':[]}");
+        });
     });
 
     it("functions", function(){
