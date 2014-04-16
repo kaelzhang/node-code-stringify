@@ -108,7 +108,13 @@ function object_to_code(object, replacer, space, indent) {
 
 
 function string_to_code(string){
-    return code_this.QUOTE + string.replace(/'/g, '\\\'') + code_this.QUOTE;
+    return code_this.QUOTE 
+      + string
+          .replace(/'/g, '\\\'')
+
+          // #2: deals with backslash
+          .replace(/\\/g, '\\\\')
+      + code_this.QUOTE;
 };
 
 

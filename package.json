@@ -1,6 +1,6 @@
 {
   "name": "code-this",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Code-this is node.js module that converts JavaScript variables into source codes. Unlike `JSON.stringify`, code-this also deals with reference(object) types of variables.",
   "main": "index.js",
   "scripts": {
