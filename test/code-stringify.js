@@ -75,6 +75,14 @@ describe("reference types", function(){
       expect(code({a:1,b:true,cd:2,'c-d':3})).to.equal("{a:1,b:true,cd:2,'c-d':3}");
     });
 
+    it('number key object', function () {
+      expect(code({0: 1})).to.equal("{0:1}")
+    })
+
+    it('object key starts with number', function () {
+      expect(code({'0a': 1})).to.equal("{'0a':1}")
+    })
+
     it("with indents", function(){
       expect(code({a:1,b:true}, null, 4)).to.equal("{\n    a: 1,\n    b: true\n}");
     });
