@@ -17,24 +17,20 @@ npm install code-stringify --save
 ## Usage
 
 ```js
-var code = require('code-stringify');
-var a = {a: function(n){return n;}, b: 1, c: 3};
+const code = require('code-stringify')
+const obj = {
+  0: 1,
+  a: function(n){return n;},
+  b: 1,
+  'c-d': 3
+}
 
-code(a, null, 2); // 1
-```
+const fs = require('fs')
 
-Expression {1} will return:
-
-```js
-'{\n  \'a\': function (n){return n;},\n  \'b\': 1,\n  \'c\': 3\n}'
-```
-
-So you can use code-stringify to save your javascript variables into a file:
-
-```js
-require('fs').writeFileSync(
+// So you can use code-stringify to save your javascript variables into a file:
+fs.writeFileSync(
 	'output.js',
-	'module.exports = ' + code(a, null, 2) + ';';
+	'module.exports = ' + code(a, null, 2)
 );
 ```
 
@@ -42,10 +38,11 @@ Then 'output.js' will look like:
 
 ```js
 module.exports = {
-  'a': function (n){return n;},
-  'b': 1,
-  'c': 3
-};
+  0: 1,
+  a: function (n){return n;},
+  b: 1,
+  "c-d": 3
+}
 ```
 
 ## code(subject, replacer, space)
