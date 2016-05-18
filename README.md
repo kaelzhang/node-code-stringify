@@ -1,23 +1,23 @@
-[![NPM version](https://badge.fury.io/js/code-this.png)](http://badge.fury.io/js/code-this)
-[![Build Status](https://travis-ci.org/kaelzhang/node-code-this.png?branch=master)](https://travis-ci.org/kaelzhang/node-code-this)
-[![Dependency Status](https://gemnasium.com/kaelzhang/node-code-this.png)](https://gemnasium.com/kaelzhang/node-code-this)
+[![NPM version](https://badge.fury.io/js/code-stringify.png)](http://badge.fury.io/js/code-stringify)
+[![Build Status](https://travis-ci.org/kaelzhang/node-code-stringify.png?branch=master)](https://travis-ci.org/kaelzhang/node-code-stringify)
+[![Dependency Status](https://gemnasium.com/kaelzhang/node-code-stringify.png)](https://gemnasium.com/kaelzhang/node-code-stringify)
 
 # Code-this
 
-Code-this is the node.js module that converts JavaScript variables into source codes. 
+Code-this is the node.js module that converts JavaScript variables into source codes.
 
-Unlike `JSON.stringify`, code-this also deals with reference(object) types of variables.
+Unlike `JSON.stringify`, code-stringify also deals with reference(object) types of variables.
 
 ## Installation
 
 ```sh
-npm install code-this --save
+npm install code-stringify --save
 ```
 
 ## Usage
 
 ```js
-var code = require('code-this');
+var code = require('code-stringify');
 var a = {a: function(n){return n;}, b: 1, c: 3};
 
 code(a, null, 2); // 1
@@ -29,11 +29,11 @@ Expression {1} will return:
 '{\n  \'a\': function (n){return n;},\n  \'b\': 1,\n  \'c\': 3\n}'
 ```
 
-So you can use code-this to save your javascript variables into a file:
+So you can use code-stringify to save your javascript variables into a file:
 
 ```js
 require('fs').writeFileSync(
-	'output.js', 
+	'output.js',
 	'module.exports = ' + code(a, null, 2) + ';';
 );
 ```
