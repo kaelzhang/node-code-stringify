@@ -2,20 +2,42 @@
 
 var code = require('..');
 var expect = require('chai').expect;
+var fs = require('fs')
+var node_path = require('path')
 
 var obj = {
+  0: 1,
+  2: 1,
   a: 1,
-  b: '2',
-  c: true,
-  d: function(n){return n;},
-  e: [ {a: 1}, [1, '2'], '1' ],
-  f: 1,
-  g: 1,
-  h: 1,
-  i: 1
+  bc: '2',
+  def: true,
+  'g-h': function(n){return n;},
+  $i: [
+    {
+      a: 1
+    },
+    [
+      1,
+      '2'
+    ],
+    '1'
+  ],
+  a0: 1,
+  '0ab': 1
 }
 
+var expected = fs.readFileSync(
+  node_path.join(__dirname, 'expected')
+).toString()
+
 code.QUOTE = '\''
+
+describe('complex', function () {
+  it('all together', function () {
+    var result = code(obj, null, 2)
+    expect(result).to.equal(expected)
+  })
+})
 
 describe("primitive types", function(){
   it("number", function(){

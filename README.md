@@ -1,6 +1,4 @@
-[![NPM version](https://badge.fury.io/js/code-stringify.png)](http://badge.fury.io/js/code-stringify)
-[![Build Status](https://travis-ci.org/kaelzhang/node-code-stringify.png?branch=master)](https://travis-ci.org/kaelzhang/node-code-stringify)
-[![Dependency Status](https://gemnasium.com/kaelzhang/node-code-stringify.png)](https://gemnasium.com/kaelzhang/node-code-stringify)
+[![Build Status](https://travis-ci.org/kaelzhang/node-code-stringify.svg?branch=master)](https://travis-ci.org/kaelzhang/node-code-stringify)
 
 # Code-this
 
@@ -29,9 +27,9 @@ const fs = require('fs')
 
 // So you can use code-stringify to save your javascript variables into a file:
 fs.writeFileSync(
-	'output.js',
-	'module.exports = ' + code(a, null, 2)
-);
+  'output.js',
+  'module.exports = ' + code(a, null, 2)
+)
 ```
 
 Then 'output.js' will look like:
@@ -59,11 +57,10 @@ The `replacer` argument acts just like the second parameter of `JSON.stringify`.
 
 The `space` argument acts just like the third parameter of `JSON.stringify`.
 
-
 ## Known Issues
 
-- Code-this can't deal with recursive objects or arrays SO FAR.
+- Can't deal with recursive objects or arrays SO FAR.
 - `space` parameter could not affect the code indent inside functions.
-- Code-this could not deal with variable scope so far.
+- Could not deal with variable scope so far.
 
 Those issues or tasks which should be done to enhance the module might be fixed in the future. Or there will be a million thanks if you fork and contribute ~~
