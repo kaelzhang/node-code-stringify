@@ -1,7 +1,7 @@
 {
   "name": "code-stringify",
-  "version": "1.0.2",
-  "description": "Code-this is node.js module that converts JavaScript variables into source codes. Unlike `JSON.stringify`, code-stringify also deals with reference(object) types of variables.",
+  "version": "1.0.3",
+  "description": "code-stringify is node.js module that converts JavaScript variables into source codes. Unlike JSON.stringify, code-stringify converts things into strings of code, not JSON.",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec ./test/code-stringify.js"

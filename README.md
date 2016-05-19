@@ -1,10 +1,10 @@
 [![Build Status](https://travis-ci.org/kaelzhang/node-code-stringify.svg?branch=master)](https://travis-ci.org/kaelzhang/node-code-stringify)
 
-# Code-this
+# code-stringify
 
-Code-this is the node.js module that converts JavaScript variables into source codes.
+code-stringify is the node.js module that converts JavaScript variables into source codes.
 
-Unlike `JSON.stringify`, code-stringify also deals with reference(object) types of variables.
+Unlike `JSON.stringify`, code-stringify also deals with reference(object) types of variables, and it converts JavaScript variables into strings of codes, not JSON.
 
 ## Installation
 
