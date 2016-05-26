@@ -44,6 +44,18 @@ describe('code.Code', function () {
   it('single', function () {
     expect(code(new code.Code('a'))).to.equal('a')
   })
+
+  it('should not use normal `toCode` property', function () {
+    expect(code({toCode: function(){return 3}})).to.equal('{toCode:function (){return 3}}')
+  })
+
+  it('if toCode is not a function', function () {
+    function F () {
+    }
+    F.prototype.toCode = 3
+    var f = new F
+    expect(code(f)).to.equal('{}')
+  })
 })
 
 describe("primitive types", function(){
