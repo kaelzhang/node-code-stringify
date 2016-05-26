@@ -2,6 +2,7 @@
 'use strict'
 
 module.exports = code_stringify
+code_stringify.Code = Code
 
 var node_util = require('util')
 
@@ -11,6 +12,15 @@ var PRE_BRANKET = '['
 var SUF_BRANKET = ']'
 
 code_stringify.QUOTE = '\"'
+
+
+function Code (code) {
+  this.code = code
+}
+
+Code.prototype.toCode = function () {
+  return this.code
+}
 
 
 function code_stringify(value, replacer, space, indent) {
@@ -42,6 +52,14 @@ function code_stringify(value, replacer, space, indent) {
 
   if(node_util.isArray(value)){
     return array_to_code(value, replacer, space, indent)
+  }
+
+  if (
+    value.toCode
+    && typeof value.toCode === 'function'
+    && !value.hasOwnProperty('toCode')
+  ) {
+    return value.toCode()
   }
 
   return object_to_code(value, replacer, space, indent)

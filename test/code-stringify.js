@@ -23,7 +23,8 @@ var obj = {
     '1'
   ],
   a0: 1,
-  '0ab': 1
+  '0ab': 1,
+  foo: new code.Code('(function(a){return a})(3)')
 }
 
 var expected = fs.readFileSync(
@@ -36,6 +37,12 @@ describe('complex', function () {
   it('all together', function () {
     var result = code(obj, null, 2)
     expect(result).to.equal(expected)
+  })
+})
+
+describe('code.Code', function () {
+  it('single', function () {
+    expect(code(new code.Code('a'))).to.equal('a')
   })
 })
 

@@ -16,5 +16,6 @@
     '1'
   ],
   a0: 1,
-  '0ab': 1
+  '0ab': 1,
+  foo: (function(a){return a})(3)
 }

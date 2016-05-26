@@ -57,6 +57,34 @@ The `replacer` argument acts just like the second parameter of `JSON.stringify`.
 
 The `space` argument acts just like the third parameter of `JSON.stringify`.
 
+### code.Code(string)
+
+If an object `obj` has a prototype property `toCode` and `obj.toCode` is an function, then `code(obj)` will be equal to `obj.toCode()`.
+
+We could use `new code.Code(code_string)` to define an already-stringified property.
+
+So, see the example below:
+
+```js
+let output = 'module.exports = ' + code({
+  a: 1,
+  'foo-bar': 2,
+  foo: new code.Code('(function(a){return a})(3)')
+})
+
+saveFile(output, 'output.js')
+```
+
+And the output.js will be:
+
+```
+module.exports = {
+  a: 1,
+  'foo-bar': 2,
+  foo: (function(a){return a})(3)
+}
+```
+
 ## Known Issues
 
 - Can't deal with recursive objects or arrays SO FAR.
