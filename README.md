@@ -2,9 +2,9 @@
 
 # code-stringify
 
-code-stringify is the node.js module that converts JavaScript variables into source codes.
+`code-stringify` is the node.js module that converts JavaScript variables into source codes.
 
-Unlike `JSON.stringify`, code-stringify also deals with reference(object) types of variables, and it converts JavaScript variables into strings of codes, not JSON.
+Unlike `JSON.stringify`, `code-stringify` also deals with reference(object) types of variables, and it converts JavaScript variables into strings of codes, not JSON.
 
 ## Installation
 
@@ -49,11 +49,24 @@ module.exports = {
 
 The subject to be converted
 
-##### replacer `function(key, value)`
+##### replacer `function(key, value)|Array`
 
 The `replacer` argument acts just like the second parameter of `JSON.stringify`.
 
-##### space `number`
+```js
+code({
+  a: 1,
+  b: 2
+}, function (key, value) {
+  return key === 'b'
+    ? undefined
+    : value
+})
+
+// '{a:1}'
+```
+
+##### space `number|string`
 
 The `space` argument acts just like the third parameter of `JSON.stringify`.
 
@@ -84,6 +97,21 @@ module.exports = {
   foo: (function(a){return a})(3)
 }
 ```
+
+## Versus `JSON.stringify()`
+
+value | JSON.stringify(value) | code(value) |
+----- | --------------------- | ----------- | ----------
+`1`   | `'1'`                 | `'1'`       |
+`'1'` | `"1"`                 | `"'1'"`     | you can change quote style by `code.QUOTE = '"'`
+`undefined` | `undefined`     | `'undefined'` |
+`null`      | `'null'`        | `'null'`      |
+[undefined] | `[null]`        | `[undefined]` |
+[null]      | `[null]`        | `[null]`      |
+
+- `JSON.stringify` makes JSON.
+- `code-stringify` makes JavaScript code.
+
 
 ## Known Issues
 

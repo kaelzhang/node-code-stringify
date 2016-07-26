@@ -139,4 +139,29 @@ describe("mixtures", function(){
   })
 })
 
+describe('replacer', function () {
+  it('removes object property if returns undefined, remove all', function () {
+    expect(code({a: 1}, function () {})).to.equal('undefined')
+  })
 
+  it('removes object property if returns undefined, remove a', function () {
+    expect(code({a: 1}, function (k, v) {
+      return k === 'a'
+        ? undefined
+        : v
+    })).to.equal('{}')
+  })
+
+  it('replacer this', function () {
+    var value = {a: 1}
+    code(value, function (k, v) {
+      if (!k) {
+        expect(this).to.deep.equal({'': value})
+      }
+
+      if (k === 'a') {
+        expect(this).to.equal(value)
+      }
+    })
+  })
+})

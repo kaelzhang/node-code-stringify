@@ -132,7 +132,7 @@ function apply_object_function_replacer (value, replacer) {
       continue
     }
 
-    value[k] = apply_function_replacer(v)
+    value[k] = apply_function_replacer(v, replacer)
   }
 
   return value
@@ -140,8 +140,8 @@ function apply_object_function_replacer (value, replacer) {
 
 
 function is_plain_object (object) {
-  return typeof value === 'object'
-    && value.constructor === Object
+  return typeof object === 'object'
+    && object.constructor === {}.constructor
 }
 
 
