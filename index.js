@@ -1,8 +1,8 @@
 
 'use strict'
 
-module.exports = code_stringify
-code_stringify.Code = Code
+module.exports = stringify
+stringify.Code = Code
 
 var node_util = require('util')
 
@@ -11,7 +11,7 @@ var SUF_CURLY_BRANKET = '}'
 var PRE_BRANKET = '['
 var SUF_BRANKET = ']'
 
-code_stringify.QUOTE = '\"'
+stringify.QUOTE = '\"'
 
 
 function Code (code) {
@@ -23,9 +23,16 @@ Code.prototype.toCode = function () {
 }
 
 
-function code_stringify(value, replacer, space, indent) {
-  var type = typeof value
+function stringify (value, replacer, space, indent) {
+  space = make_sure_spaces(space)
+  indent = make_sure_spaces(indent)
+  value = apply_replacer(value, replacer)
 
+  return code_stringify(value, space, indent)
+}
+
+
+function code_stringify(value, space, indent) {
   if(value === undefined){
     return 'undefined'
   }
@@ -33,6 +40,8 @@ function code_stringify(value, replacer, space, indent) {
   if(value === null){
     return 'null'
   }
+
+  var type = typeof value
 
   if(type === 'number'){
     return String(value)
@@ -51,7 +60,7 @@ function code_stringify(value, replacer, space, indent) {
   }
 
   if(node_util.isArray(value)){
-    return array_to_code(value, replacer, space, indent)
+    return array_to_code(value, space, indent)
   }
 
   if (
@@ -62,7 +71,89 @@ function code_stringify(value, replacer, space, indent) {
     return value.toCode()
   }
 
-  return object_to_code(value, replacer, space, indent)
+  return object_to_code(value, space, indent)
+}
+
+
+function apply_replacer (value, replacer) {
+  if (node_util.isFunction(replacer)) {
+    var input = {
+      '': value
+    }
+    return apply_function_replacer(input, replacer)['']
+  }
+
+  if (
+    node_util.isArray(replacer)
+    // Array replacer only works for plain object
+    && is_plain_object(value)
+  ) {
+    return apply_function_replacer(value, function (k, v) {
+      return ~replacer.indexOf(k)
+        ? v
+        : undefined
+    })
+  }
+
+  return value
+}
+
+
+function apply_function_replacer (value, replacer) {
+  if (node_util.isArray(value)) {
+    return apply_array_function_replacer(value, replacer)
+  }
+
+  if (is_plain_object(value)) {
+    return apply_object_function_replacer(value, replacer)
+  }
+
+  return value
+}
+
+
+function apply_array_function_replacer (value, replacer) {
+  return value.map(function (i, v) {
+    v = replacer.call(value, i, v)
+    return apply_function_replacer(v, replacer)
+  })
+}
+
+
+function apply_object_function_replacer (value, replacer) {
+  var k
+  var v
+  for (k in value) {
+    v = value[k]
+    v = replacer.call(value, k, v)
+
+    if (v === undefined) {
+      delete value[k]
+      continue
+    }
+
+    value[k] = apply_function_replacer(v)
+  }
+
+  return value
+}
+
+
+function is_plain_object (object) {
+  return typeof value === 'object'
+    && value.constructor === Object
+}
+
+
+function make_sure_spaces (space) {
+  var type = typeof space
+
+  // Support string-type `space`
+  return type === 'string'
+    ? space
+    : type === 'number'
+      ? create_spaces(space)
+      : ''
 }
 
 
@@ -86,15 +177,12 @@ function create_spaces(n){
 // @param {function|null} replacer same as `replacer` parameter of `JSON.stringify`
 // @param {number} space same as `space` parameter of `JSON.stringify`
 // @param {number} indent
-function object_to_code(object, replacer, space, indent) {
-  space = space || 0
-  indent = indent || 0
-
+function object_to_code(object, space, indent) {
   var key
   var value
 
-  var indent_string = create_spaces(indent)
-  var joiner = (space ? '\n' + create_spaces(space) : '') + indent_string
+  var indent_string = indent
+  var joiner = (space ? '\n' + space : '') + indent_string
 
   var key_value_joiner = space
     ? ' '
@@ -110,18 +198,10 @@ function object_to_code(object, replacer, space, indent) {
     if( object.hasOwnProperty(key) ){
       value = object[key]
 
-      if(replacer){
-        value = replacer(key, value)
-
-        if(value === undefined){
-          continue
-        }
-      }
-
       code.push(
         string_to_key(key) +
         ':' + key_value_joiner +
-        code_stringify(value, replacer, space, space + indent)
+        code_stringify(value, space, space + indent)
       )
     }
   }
@@ -135,9 +215,9 @@ function object_to_code(object, replacer, space, indent) {
 
 
 function string_to_code(string){
-  return code_stringify.QUOTE
+  return stringify.QUOTE
     + escape_string(string)
-    + code_stringify.QUOTE
+    + stringify.QUOTE
 }
 
 
@@ -162,20 +242,17 @@ function escape_string (string) {
   return string
   // #2: deals with backslash
   .replace(/\\/g, '\\\\')
-  .replace(new RegExp(code_stringify.QUOTE, 'g'), '\\' + code_stringify.QUOTE)
+  .replace(new RegExp(stringify.QUOTE, 'g'), '\\' + stringify.QUOTE)
 }
 
 
 // @param {Array} array
-function array_to_code(array, replacer, space, indent){
-  space = space || 0
-  indent = indent || 0
-
+function array_to_code (array, space, indent) {
   var key
   var value
 
-  var indent_string = create_spaces(indent)
-  var joiner = (space ? '\n' + create_spaces(space) : '') + indent_string
+  var indent_string = indent
+  var joiner = (space ? '\n' + space : '') + indent_string
 
   var start = PRE_BRANKET + joiner
   var end = (space ? '\n' : '') + indent_string + SUF_BRANKET
@@ -191,18 +268,7 @@ function array_to_code(array, replacer, space, indent){
   // 'coz those method will never iterate unset items of an array
   for(; i < length; i ++){
     value = array[i]
-
-    if(replacer){
-      value = replacer( String(i), value )
-
-      if(value === undefined){
-
-        // If `replacer` returns undefined then null is used instead, as well as `JSON.stringify`
-        value = null
-      }
-    }
-
-    code.push( code_stringify(value, replacer, space, indent + space) )
+    code.push(code_stringify(value, space, indent + space))
   }
 
   code = code.join(joiner)

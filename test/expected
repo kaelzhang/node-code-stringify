@@ -4,7 +4,7 @@
   a: 1,
   bc: '2',
   def: true,
-  'g-h': function (n){return n;},
+  'g-h': function (n){return n},
   $i: [
     {
       a: 1
