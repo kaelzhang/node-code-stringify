@@ -58,7 +58,7 @@ describe('code.Code', function () {
   })
 
   it('with replacer', function () {
-    let value = [1, 2, 3]
+    var value = [1, 2, 3]
     expect(code(value, function (i, v) {
       return i === ''
         ? v
