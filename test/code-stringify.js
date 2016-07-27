@@ -56,6 +56,15 @@ describe('code.Code', function () {
     var f = new F
     expect(code(f)).to.equal('{}')
   })
+
+  it('with replacer', function () {
+    let value = [1, 2, 3]
+    expect(code(value, function (i, v) {
+      return i === ''
+        ? v
+        : new code.Code('_' + v)
+    })).to.equal('[_1,_2,_3]')
+  })
 })
 
 describe("primitive types", function(){
@@ -163,5 +172,15 @@ describe('replacer', function () {
         expect(this).to.equal(value)
       }
     })
+  })
+
+  it('object with array replacer', function () {
+    var value = {a: 1, b: 2}
+    expect(code(value, ['a'])).to.equal('{a:1}')
+  })
+
+  it('array with array replacer', function () {
+    var value = ['a', 'b']
+    expect(code(value, [1])).to.equal("['a','b']")
   })
 })

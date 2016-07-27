@@ -113,7 +113,7 @@ function apply_function_replacer (value, replacer) {
 
 
 function apply_array_function_replacer (value, replacer) {
-  return value.map(function (i, v) {
+  return value.map(function (v, i) {
     v = replacer.call(value, i, v)
     return apply_function_replacer(v, replacer)
   })
