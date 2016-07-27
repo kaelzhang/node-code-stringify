@@ -100,14 +100,14 @@ module.exports = {
 
 ## Versus `JSON.stringify()`
 
-value | JSON.stringify(value) | code(value) |
+value | JSON.stringify(value) | code(value) | comment
 ----- | --------------------- | ----------- | ----------
 `1`   | `'1'`                 | `'1'`       |
 `'1'` | `"1"`                 | `"'1'"`     | you can change quote style by `code.QUOTE = '"'`
 `undefined` | `undefined`     | `'undefined'` |
 `null`      | `'null'`        | `'null'`      |
-[undefined] | `[null]`        | `[undefined]` |
-[null]      | `[null]`        | `[null]`      |
+`[undefined]` | `[null]`        | `[undefined]` |
+`[null]`      | `[null]`        | `[null]`      |
 
 - `JSON.stringify` makes JSON.
 - `code-stringify` makes JavaScript code.

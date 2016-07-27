@@ -76,7 +76,7 @@ function code_stringify(value, space, indent) {
 
 
 function apply_replacer (value, replacer) {
-  if (node_util.isFunction(replacer)) {
+  if (typeof replacer === 'function') {
     var input = {
       '': value
     }
