@@ -6,9 +6,9 @@ var fs = require('fs')
 var node_path = require('path')
 
 var obj = {
-  0: 1,
+  '0': 1,
   2: 1,
-  a: 1,
+  'a': 1,
   bc: '2',
   def: true,
   'g-h': function(n){return n},
