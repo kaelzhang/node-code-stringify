@@ -21,6 +21,7 @@ index.php
 *~
 *.sass-cache
 *.tmp.html
+package-lock.json
 
 # OS or Editor folders
 .DS_Store

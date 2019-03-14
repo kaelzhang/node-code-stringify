@@ -109,8 +109,8 @@ module.exports = {
 value | JSON.stringify(value) | code(value) | comment
 ----- | --------------------- | ----------- | ----------
 `1`   | `'1'`                 | `'1'`       |
-`'1'` | `"1"`                 | `"'1'"`     | you can change quote style by `code.QUOTE = '"'`
-`undefined` | `undefined`     | `'undefined'` |
+`'1'` | `'"1"'`                 | `"'1'"`     | you can change quote style by `code.QUOTE = '"'`
+`undefined` | `'undefined'`     | `'undefined'` |
 `null`      | `'null'`        | `'null'`      |
 `[undefined]` | `[null]`        | `[undefined]` |
 `[null]`      | `[null]`        | `[null]`      |

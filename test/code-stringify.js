@@ -36,7 +36,7 @@ code.QUOTE = '\''
 describe('complex', function () {
   it('all together', function () {
     var result = code(obj, null, 2)
-    expect(result).to.equal(expected)
+    expect(result).to.equal(expected.trim())
   })
 })
 
@@ -46,7 +46,7 @@ describe('code.Code', function () {
   })
 
   it('should not use normal `toCode` property', function () {
-    expect(code({toCode: function(){return 3}})).to.equal('{toCode:function (){return 3}}')
+    expect(code({toCode: function(){return 3}})).to.equal('{toCode:function(){return 3}}')
   })
 
   it('if toCode is not a function', function () {
@@ -113,7 +113,7 @@ describe("reference types", function(){
   })
 
   it("functions", function(){
-    expect(code(function(a){return a})).to.equal('function (a){return a}')
+    expect(code(function(a){return a})).to.equal('function(a){return a}')
   })
 
   it("regexp", function(){

@@ -1,6 +1,6 @@
 {
   "name": "code-stringify",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "code-stringify is node.js module that converts JavaScript variables into source codes. Unlike JSON.stringify, code-stringify converts things into strings of code, not JSON.",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "url": "https://github.com/kaelzhang/node-code-stringify/issues"
   },
   "devDependencies": {
-    "mocha": "~1.13.0",
-    "chai": "~1.8.0"
+    "mocha": "~6.0.2",
+    "chai": "~4.2.0"
   }
 }
