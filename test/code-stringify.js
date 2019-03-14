@@ -24,7 +24,7 @@ var obj = {
   ],
   a0: 1,
   '0ab': 1,
-  foo: new code.Code('(function(a){return a})(3)')
+  foo: new code.Code('(function (a){return a})(3)')
 }
 
 var expected = fs.readFileSync(
