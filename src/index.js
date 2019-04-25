@@ -1,15 +1,12 @@
-
-'use strict'
-
 module.exports = stringify
 stringify.Code = Code
 
-var node_util = require('util')
+const {isArray, isRegExp, isFunction} = require('core-util-is')
 
-var PRE_CURLY_BRANKET = '{'
-var SUF_CURLY_BRANKET = '}'
-var PRE_BRANKET = '['
-var SUF_BRANKET = ']'
+const PRE_CURLY_BRANKET = '{'
+const SUF_CURLY_BRANKET = '}'
+const PRE_BRANKET = '['
+const SUF_BRANKET = ']'
 
 
 function Code (code) {
@@ -20,51 +17,6 @@ Code.prototype.toCode = function () {
   return this.code
 }
 
-
-
-function code_stringify(value, space, indent) {
-  if(value === undefined){
-    return 'undefined'
-  }
-
-  if(value === null){
-    return 'null'
-  }
-
-  var type = typeof value
-
-  if(type === 'number'){
-    return String(value)
-  }
-
-  if(type === 'string'){
-    return string_to_code(value)
-  }
-
-  if(type === 'boolean'){
-    return value ? 'true' : 'false'
-  }
-
-  if(type === 'function' || node_util.isRegExp(value)){
-    return value.toString()
-  }
-
-  if(node_util.isArray(value)){
-    return array_to_code(value, space, indent)
-  }
-
-  if (
-    value.toCode
-    && typeof value.toCode === 'function'
-    && !value.hasOwnProperty('toCode')
-  ) {
-    return value.toCode()
-  }
-
-  return object_to_code(value, space, indent)
-}
-
-
 function apply_replacer (value, replacer) {
   if (typeof replacer === 'function') {
     var input = {
@@ -74,7 +26,7 @@ function apply_replacer (value, replacer) {
   }
 
   if (
-    node_util.isArray(replacer)
+    isArray(replacer)
     // Array replacer only works for plain object
     && is_plain_object(value)
   ) {
@@ -90,7 +42,7 @@ function apply_replacer (value, replacer) {
 
 
 function apply_function_replacer (value, replacer) {
-  if (node_util.isArray(value)) {
+  if (isArray(value)) {
     return apply_array_function_replacer(value, replacer)
   }
 
@@ -204,13 +156,6 @@ function object_to_code(object, space, indent) {
 }
 
 
-function string_to_code(string){
-  return stringify.QUOTE
-    + escape_string(string)
-    + stringify.QUOTE
-}
-
-
 var VALID_KEY_STRING = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/
 
 function string_to_key (string) {
@@ -247,50 +192,134 @@ class Stringifier {
     this._options = createOptions(options)
 
     this.stringify = this.stringify.bind(this)
+    this._codec = []
   }
 
-  stringify (value, space, indent) {
+  register ({
+    test,
+    stringify: s
+  }) {
+    this._codec.push({
+      test,
+      stringify: s
+    })
+    return this
+  }
+
+  stringify (value, indent) {
 
   }
 
-  _stringify (value, space, indent) {
+  _check (value, indent) {
+    if (this._codec.length === 0) {
+      return
+    }
 
+    const found = this._codec.find(({test}) => test(value))
+    if (!found) {
+      return
+    }
+
+    const {stringify: s} = found
+    return {
+      code: s(value, indent, this._options)
+    }
   }
 
-  string () {
+  _stringify (value, indent) {
+    const checked = this._check(value)
+    if (checked) {
+      return checked.code
+    }
 
+    if (value === undefined) {
+      return 'undefined'
+    }
+
+    if (value === null) {
+      return 'null'
+    }
+
+    const type = typeof value
+
+    if (type === 'number') {
+      return String(value)
+    }
+
+    if (type === 'string') {
+      return this.string(value)
+    }
+
+    if (type === 'boolean') {
+      return value ? 'true' : 'false'
+    }
+
+    if (type === 'function' || isRegExp(value)) {
+      return value.toString()
+    }
+
+    if (isArray(value)) {
+      return this.array(value, indent)
+    }
+
+    // if (
+    //   value.toCode
+    //   && typeof value.toCode === 'function'
+    //   && !value.hasOwnProperty('toCode')
+    // ) {
+    //   return value.toCode()
+    // }
+
+    return this.object(value, indent)
   }
 
-  array () {
-    var key
-    var value
+  string (value) {
+    const {quote} = this._options
 
-    var indent_string = indent
-    var joiner = (space ? '\n' + space : '') + indent_string
+    return quote
+    + escape_string(value)
+    + quote
+  }
 
-    var start = PRE_BRANKET + joiner
-    var end = (space ? '\n' : '') + indent_string + SUF_BRANKET
+  array (value, indent) {
+    const {
+      space
+    } = this._options
 
+    //   indent  space
+    // |--------|-----|
+    //          [               <--- \n + indent + space
+    //                value,    <--- itemJoiner: , + \n + indent + space
+    //                value
+    //          ]
 
-    joiner = ',' + joiner
+    // Spaces inside array
+    const sufJoiner = space
 
-    var i = 0
+      ? `\n${indent}`
+      // [value
+      : ''
+
+    const preJoiner = sufJoiner + space
+
+    // const leading = PRE_BRANKET + joiner
+    // const ending = (space ? '\n' : '') + indent + SUF_BRANKE
+
+    let i = 0
+    let v
     const {length} = array.length
-    const code = []
+    const slices = []
     // Never use any iterators of Array, such as .reduce(), .forEach(), etc,
     // 'coz those method will never iterate unset items of an array
     for (; i < length; i ++) {
-      value = array[i]
-      code.push(code_stringify(value, space, indent + space))
+      v = array[i]
+      slices.push(this._stringify(value, indent + space))
     }
 
-    const code =
-
-    code = code.join(joiner)
-
+    const code = slices.join(`,${preJoiner}`)
     return code
-      ? start + code + end :
-      '[]'
+      ? PRE_BRANKET + preJoiner + code + sufJoiner + SUF_BRANKET
+      : '[]'
   }
 }
 
@@ -298,8 +327,10 @@ class Stringifier {
 const stringify = (value, replacer, space, indent) =>
   new Stringifier({
     replacer,
+    space,
     quote: stringify.QUOTE
-  }).stringify(value, space, indent)
+  })
+  .stringify(value, indent)
   // space = make_sure_spaces(space)
   // indent = make_sure_spaces(indent)
   // value = apply_replacer(value, replacer)

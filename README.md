@@ -2,20 +2,22 @@
 
 # code-stringify
 
-`code-stringify` is the node.js module that converts JavaScript variables into source codes.
+`code-stringify` is the node.js module that converts JavaScript variables into source codes with indents and styles.
 
 Unlike `JSON.stringify`, `code-stringify` also deals with reference(object) types of variables, and it converts JavaScript variables into strings of codes, not JSON.
 
 Supports:
 
+- Primative variables
 - Regular expressions
 - Functions
 - Arrays
+- Your custom formatter
 
 ## Installation
 
 ```sh
-npm install code-stringify --save
+npm i code-stringify
 ```
 
 ## Usage
