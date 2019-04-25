@@ -11,8 +11,6 @@ var SUF_CURLY_BRANKET = '}'
 var PRE_BRANKET = '['
 var SUF_BRANKET = ']'
 
-stringify.QUOTE = '\"'
-
 
 function Code (code) {
   this.code = code
@@ -22,14 +20,6 @@ Code.prototype.toCode = function () {
   return this.code
 }
 
-
-function stringify (value, replacer, space, indent) {
-  space = make_sure_spaces(space)
-  indent = make_sure_spaces(indent)
-  value = apply_replacer(value, replacer)
-
-  return code_stringify(value, space, indent)
-}
 
 
 function code_stringify(value, space, indent) {
@@ -248,32 +238,76 @@ function escape_string (string) {
 
 // @param {Array} array
 function array_to_code (array, space, indent) {
-  var key
-  var value
 
-  var indent_string = indent
-  var joiner = (space ? '\n' + space : '') + indent_string
+}
 
-  var start = PRE_BRANKET + joiner
-  var end = (space ? '\n' : '') + indent_string + SUF_BRANKET
-  var code = []
 
-  joiner = ',' + joiner
+class Stringifier {
+  constructor (options) {
+    this._options = createOptions(options)
 
-  var i = 0
-  var length = array.length
-  var value
-
-  // Never use any iterators of Array, such as .reduce(), .forEach(), etc,
-  // 'coz those method will never iterate unset items of an array
-  for(; i < length; i ++){
-    value = array[i]
-    code.push(code_stringify(value, space, indent + space))
+    this.stringify = this.stringify.bind(this)
   }
 
-  code = code.join(joiner)
+  stringify (value, space, indent) {
 
-  return code
-    ? start + code + end :
-    '[]'
+  }
+
+  _stringify (value, space, indent) {
+
+  }
+
+  string () {
+
+  }
+
+  array () {
+    var key
+    var value
+
+    var indent_string = indent
+    var joiner = (space ? '\n' + space : '') + indent_string
+
+    var start = PRE_BRANKET + joiner
+    var end = (space ? '\n' : '') + indent_string + SUF_BRANKET
+
+
+    joiner = ',' + joiner
+
+    var i = 0
+    const {length} = array.length
+    const code = []
+    // Never use any iterators of Array, such as .reduce(), .forEach(), etc,
+    // 'coz those method will never iterate unset items of an array
+    for (; i < length; i ++) {
+      value = array[i]
+      code.push(code_stringify(value, space, indent + space))
+    }
+
+    const code =
+
+    code = code.join(joiner)
+
+    return code
+      ? start + code + end :
+      '[]'
+  }
 }
+
+
+const stringify = (value, replacer, space, indent) =>
+  new Stringifier({
+    replacer,
+    quote: stringify.QUOTE
+  }).stringify(value, space, indent)
+  // space = make_sure_spaces(space)
+  // indent = make_sure_spaces(indent)
+  // value = apply_replacer(value, replacer)
+
+  // return code_stringify(value, space, indent)
+
+}
+
+stringify.QUOTE = `'`
+
+stringify.Stringifier = Stringifier

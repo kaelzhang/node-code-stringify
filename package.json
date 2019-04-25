@@ -4,7 +4,13 @@
   "description": "code-stringify is node.js module that converts JavaScript variables into source codes. Unlike JSON.stringify, code-stringify converts things into strings of code, not JSON.",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec ./test/code-stringify.js"
+    "test": "nyc mocha test/code-stringify.js",
+    "test:dev": "npm run test && npm run report:dev",
+    "posttest": "npm run report",
+    "report": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "report:dev": "nyc report --reporter=html && open coverage/index.html",
+    "lint": "eslint .",
+    "fix": "eslint . --fix"
   },
   "keywords": [
     "strinify",
@@ -21,13 +27,21 @@
     "type": "git",
     "url": "git://github.com/kaelzhang/node-code-stringify.git"
   },
-  "author": "",
-  "license": "BSD",
+  "author": "Kael Zhang <i+npm@kael.me>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/kaelzhang/node-code-stringify/issues"
   },
   "devDependencies": {
-    "mocha": "~6.0.2",
-    "chai": "~4.2.0"
+    "chai": "^4.2.0",
+    "eslint": "^5.16.0",
+    "eslint-config-ostai": "^3.0.0",
+    "eslint-plugin-import": "^2.17.2",
+    "mocha": "^6.1.4",
+    "nyc": "^14.0.0"
+  },
+  "dependencies": {
+    "core-util-is": "^1.0.2",
+    "err-object": "^4.3.1"
   }
 }

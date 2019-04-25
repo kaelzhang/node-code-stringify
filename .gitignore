@@ -1,5 +1,8 @@
 # Neuron specified folders
 build/
+.nyc_output
+*.lcov
+/coverage
 
 # PHP files
 index.php
