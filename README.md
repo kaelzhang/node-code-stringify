@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/kaelzhang/node-code-stringify.svg?branch=master)](https://travis-ci.org/kaelzhang/node-code-stringify)
+[![Coverage](https://codecov.io/gh/kaelzhang/node-code-stringify/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/node-code-stringify)
 
 # code-stringify
 

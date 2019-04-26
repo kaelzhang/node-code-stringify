@@ -1,25 +1,14 @@
-module.exports = stringify
-stringify.Code = Code
-
 const {isArray, isRegExp, isFunction} = require('core-util-is')
+const {isNumberString, createOptions} = require('./options')
 
-const PRE_CURLY_BRANKET = '{'
-const SUF_CURLY_BRANKET = '}'
-const PRE_BRANKET = '['
-const SUF_BRANKET = ']'
-
-
-function Code (code) {
-  this.code = code
-}
-
-Code.prototype.toCode = function () {
-  return this.code
-}
+const PRE_CURLY_BRACKET = '{'
+const SUF_CURLY_BRACKET = '}'
+const PRE_BRACKET = '['
+const SUF_BRACKET = ']'
 
 function apply_replacer (value, replacer) {
   if (typeof replacer === 'function') {
-    var input = {
+    const input = {
       '': value
     }
     return apply_function_replacer(input, replacer)['']
@@ -30,11 +19,9 @@ function apply_replacer (value, replacer) {
     // Array replacer only works for plain object
     && is_plain_object(value)
   ) {
-    return apply_function_replacer(value, function (k, v) {
-      return ~replacer.indexOf(k)
-        ? v
-        : undefined
-    })
+    return apply_function_replacer(value, (k, v) => ~ replacer.indexOf(k)
+      ? v
+      : undefined)
   }
 
   return value
@@ -55,7 +42,7 @@ function apply_function_replacer (value, replacer) {
 
 
 function apply_array_function_replacer (value, replacer) {
-  return value.map(function (v, i) {
+  return value.map((v, i) => {
     v = replacer.call(value, i, v)
     return apply_function_replacer(v, replacer)
   })
@@ -63,8 +50,8 @@ function apply_array_function_replacer (value, replacer) {
 
 
 function apply_object_function_replacer (value, replacer) {
-  var k
-  var v
+  let k
+  let v
   for (k in value) {
     v = value[k]
     v = replacer.call(value, k, v)
@@ -80,133 +67,51 @@ function apply_object_function_replacer (value, replacer) {
   return value
 }
 
+const STRINGIFY = Symbol.for('code.stringify.custom')
 
-function is_plain_object (object) {
-  return typeof object === 'object'
-    && object.constructor === {}.constructor
-}
-
-
-function make_sure_spaces (space) {
-  var type = typeof space
-
-  // Support string-type `space`
-  return type === 'string'
-    ? space
-    : type === 'number'
-      ? create_spaces(space)
-      : ''
-}
-
-
-function create_spaces(n){
-  if(!n){
-    return ''
+class Code {
+  constructor (code) {
+    this._code = code
   }
 
-  var space = ' '
-  var ret = ''
-
-  while(n --){
-    ret += space
+  [STRINGIFY] () {
+    return this._code
   }
-
-  return ret
 }
 
+const CODE_STRINGIFY_CUSTOM = {
+  test (value) {
+    return value && isFunction(value[STRINGIFY])
+  },
 
-// @param {Object} object
-// @param {function|null} replacer same as `replacer` parameter of `JSON.stringify`
-// @param {number} space same as `space` parameter of `JSON.stringify`
-// @param {number} indent
-function object_to_code(object, space, indent) {
-  var key
-  var value
-
-  var indent_string = indent
-  var joiner = (space ? '\n' + space : '') + indent_string
-
-  var key_value_joiner = space
-    ? ' '
-    : ''
-
-  var start = PRE_CURLY_BRANKET + joiner
-  var end = (space ? '\n' : '') + indent_string + SUF_CURLY_BRANKET
-  var code = []
-
-  joiner = ',' + joiner
-
-  for(key in object){
-    if( object.hasOwnProperty(key) ){
-      value = object[key]
-
-      code.push(
-        string_to_key(key) +
-        ':' + key_value_joiner +
-        code_stringify(value, space, space + indent)
-      )
-    }
+  stringify (value) {
+    return value[STRINGIFY]()
   }
-
-  code = code.join(joiner)
-
-  return code
-    ? start + code + end
-    : '{}'
 }
 
-
-var VALID_KEY_STRING = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/
-
-function string_to_key (string) {
-  // valid: {0: 1}
-  if (string === String(Number(string))) {
-    return string
-  }
-
-  // invalid: { 0a: 1 }
-  if (VALID_KEY_STRING.test(string)) {
-    return string
-  }
-
-  return string_to_code(string)
-}
-
-
-function escape_string (string) {
-  return string
-  // #2: deals with backslash
-  .replace(/\\/g, '\\\\')
-  .replace(new RegExp(stringify.QUOTE, 'g'), '\\' + stringify.QUOTE)
-}
-
-
-// @param {Array} array
-function array_to_code (array, space, indent) {
-
-}
-
+const EMPTY = ''
+const REGEX_IS_VALID_KEY_STRING = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/
 
 class Stringifier {
   constructor (options) {
     this._options = createOptions(options)
 
     this.stringify = this.stringify.bind(this)
-    this._codec = []
+    this._stringifiers = []
   }
 
   register ({
     test,
     stringify: s
   }) {
-    this._codec.push({
+    this._stringifiers.push({
       test,
       stringify: s
     })
     return this
   }
 
-  stringify (value, indent) {
+  stringify (value, indent = EMPTY) {
 
   }
 
@@ -262,26 +167,27 @@ class Stringifier {
       return this.array(value, indent)
     }
 
-    // if (
-    //   value.toCode
-    //   && typeof value.toCode === 'function'
-    //   && !value.hasOwnProperty('toCode')
-    // ) {
-    //   return value.toCode()
-    // }
-
     return this.object(value, indent)
   }
 
-  string (value) {
+  _escapeString (string) {
+    const {quote} = this._options
+
+    return string
+    // #2: deals with backslash
+    .replace(/\\/g, '\\\\')
+    .replace(new RegExp(quote, 'g'), `\\${quote}`)
+  }
+
+  string (string) {
     const {quote} = this._options
 
     return quote
-    + escape_string(value)
+    + this._escapeString(string)
     + quote
   }
 
-  array (value, indent) {
+  _join (slices, indent, pre, suf) {
     const {
       space
     } = this._options
@@ -293,7 +199,13 @@ class Stringifier {
     //                value
     //          ]
 
-    // Spaces inside array
+    //   indent  space    keyValueJoiner
+    // |--------|-----|  |--|
+    //          {
+    //                key:  value,
+    //                key:  value
+    //          }
+
     const sufJoiner = space
 
       ? `\n${indent}`
@@ -301,9 +213,15 @@ class Stringifier {
       : ''
 
     const preJoiner = sufJoiner + space
+    const code = slices.join(`,${preJoiner}`)
 
-    // const leading = PRE_BRANKET + joiner
-    // const ending = (space ? '\n' : '') + indent + SUF_BRANKE
+    return code
+      ? pre + preJoiner + code + sufJoiner + suf
+      : '[]'
+  }
+
+  array (array, indent) {
+    const {space} = this._options
 
     let i = 0
     let v
@@ -313,16 +231,47 @@ class Stringifier {
     // 'coz those method will never iterate unset items of an array
     for (; i < length; i ++) {
       v = array[i]
-      slices.push(this._stringify(value, indent + space))
+      slices.push(this._stringify(v, indent + space))
     }
 
-    const code = slices.join(`,${preJoiner}`)
-    return code
-      ? PRE_BRANKET + preJoiner + code + sufJoiner + SUF_BRANKET
-      : '[]'
+    return this._join(slices, indent, PRE_BRACKET, SUF_BRACKET)
+  }
+
+  key (key) {
+    const {useNumberKey} = this._options
+
+    // valid: {0: 1}
+    if (useNumberKey && isNumberString(key)) {
+      return key
+    }
+
+    // invalid: { 0a: 1 }
+    if (REGEX_IS_VALID_KEY_STRING.test(key)) {
+      return key
+    }
+
+    return this.string(key)
+  }
+
+  object (object, indent) {
+    const {space} = this._options
+    const keyValueJoiner = space
+      ? ' '
+      : EMPTY
+
+    const slices = []
+    Object.keys(object).forEach(key => {
+      const value = object[key]
+      slices.push(
+        `${this.key(key)}:${keyValueJoiner}${
+          this._stringify(value, space + indent)
+        }`
+      )
+    })
+
+    return this._join(slices, indent, PRE_CURLY_BRACKET, SUF_CURLY_BRACKET)
   }
 }
-
 
 const stringify = (value, replacer, space, indent) =>
   new Stringifier({
@@ -330,14 +279,16 @@ const stringify = (value, replacer, space, indent) =>
     space,
     quote: stringify.QUOTE
   })
+  .register(CODE_STRINGIFY_CUSTOM)
   .stringify(value, indent)
-  // space = make_sure_spaces(space)
-  // indent = make_sure_spaces(indent)
-  // value = apply_replacer(value, replacer)
 
-  // return code_stringify(value, space, indent)
+// space = make_sure_spaces(space)
+// indent = make_sure_spaces(indent)
+// value = apply_replacer(value, replacer)
 
-}
+// return code_stringify(value, space, indent)
+
+stringify.Code = Code
 
 stringify.QUOTE = `'`
 
