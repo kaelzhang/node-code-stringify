@@ -3,6 +3,7 @@ build/
 .nyc_output
 *.lcov
 /coverage
+*.tgz
 
 # PHP files
 index.php
