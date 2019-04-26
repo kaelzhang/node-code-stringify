@@ -26,6 +26,8 @@ EE('quote', 'either `"` or `\'`')
 EE('test', 'a function', 'customStringifier.test')
 EE('stringify', 'a function', 'customStringifier.stringify')
 
+// E('CIRCULAR_DETECTED', 'circular references detected')
+
 const EMPTY = ''
 const SPACE = ' '
 const QUOTE = `'`

@@ -9,11 +9,11 @@ Unlike `JSON.stringify`, `code-stringify` also deals with reference(object) type
 
 Supports:
 
-- Primative variables
-- Regular expressions
-- Functions
-- Arrays
-- Your custom formatter
+- **Primative variables**
+- **Regular expressions**
+- **Functions**
+- **Arrays**
+- **Your custom formatter**
 
 ## Installation
 
@@ -96,9 +96,7 @@ The code indent for the entire subject. If `indent === 4`, then the content of t
     }
 ```
 
-### stringify.Code(string)
-
-If an object `obj` has a prototype property `toCode` and `obj.toCode` is an function, then `code(obj)` will be equal to `obj.toCode()`.
+### new stringify.Code(string)
 
 We could use `new code.Code(code_string)` to define an already-stringified property.
 
@@ -122,6 +120,28 @@ module.exports = {
   'foo-bar': 2,
   foo: (function(a){return a})(3)
 }
+```
+
+### `stringify.STRINGIFY_SYMBOL`
+
+```js
+// `stringify.STRINGIFY_SYMBOL` equals to
+stringify.STRINGIFY_SYMBOL = Symbol.for('code.stringify.custom')
+```
+
+If an `object[stringify.STRINGIFY_SYMBOL]` is a function, then the function will be used as the stringifier of the object.
+
+```js
+const monkey = {
+  iam: {
+    [Symbol.for('code.stringify.custom')] () {
+      return '"monkey king"'
+    }
+  }
+}
+
+console.log(stringify(monkey))
+// {iam:"monkey king"}
 ```
 
 ### Versus `JSON.stringify()`
@@ -150,11 +170,11 @@ The constructor `Stringifier` allows us to take more control of the stringifer.
 - **options** `Object`
   - **replacer?** `(Function | Array)=null`
   - **space?** `(number | string)=0` Defaults to `0` which indicates there should be no spaces.
-  - **detectCircular?** `boolean=false` Whether should detect circular object and throw an error if any circular reference is found
+  <!-- - **detectCircular?** `boolean=false` Whether should detect circular object and throw an error if any circular reference is found -->
   - **quote?** `' | "` the quote character for strings. Defaults to `'`.
   - **useNumberKey?** `boolean=true` uses number key of an object if possible
 
-#### control object keys
+#### options.useNumberKey
 
 ```js
 new Stringifier().stringify({'1': 1, '2b': 2})
@@ -165,6 +185,10 @@ new Stringifier({
 }).stringify({'1': 1, '2b': 2})
 // {'1':1:'2b':2}
 ```
+<!--
+#### options.detectCircular
+
+If we try to stringify a circular object, then it will throw an `CIRCULAR_DETECTED` error instead of exceeding maximum call stack error if we set the option to `true` -->
 
 ### stringifier.stringify(subject, indent = 0): string
 
@@ -214,6 +238,12 @@ new Stringifier().register({
 })
 // {dinasaur:'Godzilla',ape:'[king Kong]'}
 ```
+
+## `CODE_STRINGIFY_CUSTOM`
+
+`CODE_STRINGIFY_CUSTOM` is a built-in `CustomStringifier` to support `stringify.STRINGIFY_SYMBOL`.
+
+And a new `Stringifier` is not registered `CODE_STRINGIFY_CUSTOM` by default.
 
 ### Utility methods
 
