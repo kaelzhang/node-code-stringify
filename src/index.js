@@ -1,6 +1,7 @@
 const {isArray, isRegExp, isFunction} = require('core-util-is')
 const {
-  isNumberString, createOptions, QUOTE, EMPTY, SPACE
+  isNumberString, QUOTE, EMPTY, SPACE,
+  checkStringifier, createOptions
 } = require('./options')
 const applyReplacer = require('./replacer')
 
@@ -41,14 +42,8 @@ class Stringifier {
     this._stringifiers = []
   }
 
-  register ({
-    test,
-    stringify: s
-  }) {
-    this._stringifiers.push({
-      test,
-      stringify: s
-    })
+  register (stringifier) {
+    this._stringifiers.push(checkStringifier(stringifier))
     return this
   }
 
@@ -166,7 +161,7 @@ class Stringifier {
 
     return code
       ? pre + preJoiner + code + sufJoiner + suf
-      : '[]'
+      : pre + suf
   }
 
   array (array, indent) {
@@ -174,7 +169,7 @@ class Stringifier {
 
     let i = 0
     let v
-    const {length} = array.length
+    const {length} = array
     const slices = []
     // Never use any iterators of Array, such as .reduce(), .forEach(), etc,
     // 'coz those method will never iterate unset items of an array
@@ -231,10 +226,9 @@ const stringify = (value, replacer, space, indent) =>
   .register(CODE_STRINGIFY_CUSTOM)
   .stringify(value, indent)
 
-stringify.Code = Code
-
-stringify.QUOTE = QUOTE
-
-stringify.Stringifier = Stringifier
-
 module.exports = stringify
+
+stringify.Code = Code
+stringify.CODE_STRINGIFY_CUSTOM = CODE_STRINGIFY_CUSTOM
+stringify.QUOTE = QUOTE
+stringify.Stringifier = Stringifier

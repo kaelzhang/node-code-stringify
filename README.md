@@ -83,6 +83,8 @@ The `space` argument acts just like the third parameter of `JSON.stringify`.
 
 ##### indent `number | string`
 
+Defaults to `0`
+
 The code indent for the entire subject. If `indent === 4`, then the content of the `output.js` in the first example will be:
 
 ```js
@@ -133,16 +135,32 @@ module.exports = {
 
 ## new Stringifier(options)
 
-> new in 1.3.0
+> new in 2.0.0
+
+The constructor `Stringifier` allows us to take more control of the stringifer.
 
 - **options** `Object`
   - **replacer?** `(Function | Array)=null`
-  - **space?** `(number | string)=0`
+  - **space?** `(number | string)=0` Defaults to `0` which indicates there should be no spaces.
   - **detectCircular?** `boolean=false` Whether should detect circular object and throw an error if any circular reference is found
-  - **quote** `' | "` the quote character for strings
-  -
+  - **quote?** `' | "` the quote character for strings. Defaults to `'`.
+  - **useNumberKey?** `boolean=true` uses number key of an object if possible
 
-### stringifier.stringify(subject, indent): string
+#### control object keys
+
+```js
+new Stringifier().stringify({'1': 1, '2b': 2})
+// {1:1,'2b':2}
+
+new Stringifier({
+  useNumberKey: false
+}).stringify({'1': 1, '2b': 2})
+// {'1':1:'2b':2}
+```
+
+### stringifier.stringify(subject, indent = 0): string
+
+- **indent?** `(number | string)=0`
 
 Returns the JavaScript code string.
 

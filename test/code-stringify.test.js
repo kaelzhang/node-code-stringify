@@ -46,23 +46,14 @@ describe('code.Code', () => {
     expect(code(new code.Code('a'))).to.equal('a')
   })
 
-  it('should not use normal `toCode` property', () => {
-    expect(code({toCode () { return 3 }})).to.equal('{toCode:function(){return 3}}')
-  })
-
-  it('if toCode is not a function', () => {
-    function F () {
-    }
-    F.prototype.toCode = 3
-    const f = new F()
-    expect(code(f)).to.equal('{}')
-  })
-
   it('with replacer', () => {
     const value = [1, 2, 3]
-    expect(code(value, (i, v) => i === ''
-      ? v
-      : new code.Code(`_${v}`))).to.equal('[_1,_2,_3]')
+    expect(
+      code(value, (i, v) => i === ''
+        ? v
+        : new code.Code(`_${v}`)
+      )
+    ).to.equal('[_1,_2,_3]')
   })
 })
 
@@ -112,7 +103,9 @@ describe('reference types', () => {
   })
 
   it('functions', () => {
-    expect(code(a => a)).to.equal('function(a){return a}')
+    /* eslint-disable */
+    expect(code(function(a){return a})).to.equal('function(a){return a}')
+    /* eslint-enable */
   })
 
   it('regexp', () => {
@@ -162,7 +155,8 @@ describe('replacer', () => {
 
   it('replacer this', () => {
     const value = {a: 1}
-    code(value, k => {
+    /* eslint-disable */
+    code(value, function (k) {
       if (!k) {
         expect(this).to.deep.equal({'': value})
       }
@@ -171,6 +165,7 @@ describe('replacer', () => {
         expect(this).to.equal(value)
       }
     })
+    /* eslint-enable */
   })
 
   it('object with array replacer', () => {

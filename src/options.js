@@ -4,15 +4,16 @@ const {
 } = require('core-util-is')
 
 const {error, E} = new Errors({
+  prefix: '[code-stringify] ',
   notDefined: exitOnNotDefined
 })
 
-const EE = (key, shouldBe) => {
+const EE = (key, shouldBe, variable = `options.${key}`) => {
   const s = '`%s`'
 
   E(
     `INVALID_${key.toUpperCase()}`,
-    `options.${key} must be ${shouldBe}, but got ${s}`,
+    `${variable} must be ${shouldBe}, but got ${s}`,
     TypeError
   )
 }
@@ -21,6 +22,9 @@ EE('replacer', 'null, function or array')
 EE('space', 'string or non-negative number')
 EE('detectCircular', 'boolean')
 EE('quote', 'either `"` or `\'`')
+
+EE('test', 'a function', 'customStringifier.test')
+EE('stringify', 'a function', 'customStringifier.stringify')
 
 const EMPTY = ''
 const SPACE = ' '
@@ -53,6 +57,10 @@ const RULES = {
 
   quote: {
     test: v => v === QUOTE || v === '"'
+  },
+
+  useNumberKey: {
+    test: isBoolean
   }
 }
 
@@ -62,13 +70,15 @@ const createOptions = ({
   replacer = null,
   space = 0,
   detectCircular = false,
-  quote = QUOTE
+  quote = QUOTE,
+  useNumberKey = true
 }) => {
   const ret = {
     replacer,
     space,
     detectCircular,
-    quote
+    quote,
+    useNumberKey
   }
 
   AVAILABLE_OPTIONS.forEach(key => {
@@ -87,6 +97,18 @@ const createOptions = ({
   return ret
 }
 
+const checkStringifier = stringifier => {
+  if (!isFunction(stringifier.test)) {
+    throw error('INVALID_TEST', stringifier.test)
+  }
+
+  if (!isFunction(stringifier.stringify)) {
+    throw error('INVALID_STRINGIFY', stringifier.stringify)
+  }
+
+  return stringifier
+}
+
 const isNumberString = string => string === String(Number(string))
 
 const isPlainObject = object =>
@@ -95,6 +117,7 @@ const isPlainObject = object =>
 
 module.exports = {
   createOptions,
+  checkStringifier,
   isNumberString,
   isPlainObject,
   QUOTE,
