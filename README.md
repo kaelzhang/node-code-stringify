@@ -178,16 +178,72 @@ Returns the JavaScript code string.
 
 ```ts
 interface CustomStringifier {
-  //
+  // Test if we could use the custom stringifier
   test: Function (subject): boolean
+  // If the test method returns true,
+  // then the stringify method will be used.
+  // Inside the method, we can access the `Stringifier` instance by `this` object, so that we can use the utility methods below
   stringify: Function(subject, indent, options): string
 }
 ```
 
 Register a custom stringifier for certain data type.
 
+```js
+class King {
+  constructor (name) {
+    this._name = name
+  }
+
+  selfIntroduce () {
+    return `[king ${this._name}]`
+  }
+}
+
+new Stringifier().register({
+  test (value) {
+    return value instanceof Monkey
+  },
+  stringify (value) {
+    return this.string(value.selfIntroduce())
+  }
+})
+.stringify({
+  dinosaur: 'Godzilla',
+  ape: new King('Kong')
+})
+// {dinasaur:'Godzilla',ape:'[king Kong]'}
+```
 
 ### Utility methods
+
+The following methods has no type checking and fault tolerance
+
+Make sure every argument that passed into the methods has been type-checked
+
+#### stringifier.string(string)
+
+- **string** `string`
+
+Stringify a string
+
+#### stringifier.object(object, indent)
+
+- **object** `Object`
+
+Stringify a string
+
+#### stringifier.array(array, indent)
+
+- **array** `Array`
+
+Stringify an array
+
+#### stringifier.key(key)
+
+- **string** `key`
+
+Stringify a property of an object.
 
 ## Known Issues
 
