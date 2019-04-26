@@ -24,7 +24,7 @@ npm i code-stringify
 ## Usage
 
 ```js
-const code = require('code-stringify')
+const stringify = require('code-stringify')
 const obj = {
   '0': 1,
   'a': function(n){return n;},
@@ -37,7 +37,7 @@ const fs = require('fs')
 // So you can use code-stringify to save your javascript variables into a file:
 fs.writeFileSync(
   'output.js',
-  'module.exports = ' + code(a, null, 2)
+  'module.exports = ' + stringify(a, null, 2)
 )
 ```
 
@@ -52,18 +52,20 @@ module.exports = {
 }
 ```
 
-## code(subject, replacer, space)
+## stringify(subject, replacer, space, indent)
 
-##### subject `mixed`
+##### subject `any`
 
-The subject to be converted
+The subject to be stringified
 
-##### replacer `function(key, value)|Array`
+##### replacer `Function(key, value) | Array`
 
 The `replacer` argument acts just like the second parameter of `JSON.stringify`.
 
+> A function that alters the behavior of the stringification process, or an array of String and Number objects that serve as a whitelist for selecting/filtering the properties of the value object to be included in the JSON string. If this value is null or not provided, all properties of the object are included in the resulting JSON string.
+
 ```js
-code({
+stringify({
   a: 1,
   b: 2
 }, function (key, value) {
@@ -75,11 +77,24 @@ code({
 // '{a:1}'
 ```
 
-##### space `number|string`
+##### space `number | string`
 
 The `space` argument acts just like the third parameter of `JSON.stringify`.
 
-### code.Code(string)
+##### indent `number | string`
+
+The code indent for the entire subject. If `indent === 4`, then the content of the `output.js` in the first example will be:
+
+```js
+    module.exports = {
+      0: 1,
+      a: function (n){return n;},
+      b: 1,
+      "c-d": 3
+    }
+```
+
+### stringify.Code(string)
 
 If an object `obj` has a prototype property `toCode` and `obj.toCode` is an function, then `code(obj)` will be equal to `obj.toCode()`.
 
@@ -88,11 +103,11 @@ We could use `new code.Code(code_string)` to define an already-stringified prope
 So, see the example below:
 
 ```js
-let output = 'module.exports = ' + code({
+let output = `module.exports = ${stringify({
   a: 1,
   'foo-bar': 2,
-  foo: new code.Code('(function(a){return a})(3)')
-})
+  foo: new stringify.Code('(function(a){return a})(3)')
+})}`
 
 saveFile(output, 'output.js')
 ```
@@ -107,24 +122,32 @@ module.exports = {
 }
 ```
 
-## Versus `JSON.stringify()`
-
-value | JSON.stringify(value) | code(value) | comment
------ | --------------------- | ----------- | ----------
-`1`   | `'1'`                 | `'1'`       |
-`'1'` | `'"1"'`                 | `"'1'"`     | you can change quote style by `code.QUOTE = '"'`
-`undefined` | `'undefined'`     | `'undefined'` |
-`null`      | `'null'`        | `'null'`      |
-`[undefined]` | `[null]`        | `[undefined]` |
-`[null]`      | `[null]`        | `[null]`      |
+### Versus `JSON.stringify()`
 
 - `JSON.stringify` makes JSON.
 - `code-stringify` makes JavaScript code.
 
+****
+
+> Advanced Section
+
+## new Stringifier(options)
+
+> new in 1.3.0
+
+- **options** `Object`
+  - **replacer?** `(Function | Array)=null`
+  - **space?** `(number | string)=0`
+  - **detectCircular?** `boolean=false` Whether should detect circular object and throw an error if any circular reference is found
+  - **quote** `' | "` the quote character for strings
+  -
+
+### stringifier.stringify(subject, indent): string
+
+Returns the JavaScript code string.
 
 ## Known Issues
 
-- Can't deal with recursive objects or arrays SO FAR.
 - `space` parameter could not affect the code indent inside functions.
 - Could not deal with variable scope so far.
 

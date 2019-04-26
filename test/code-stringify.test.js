@@ -1,6 +1,7 @@
 
 
 const code = require('..')
+
 const {expect} = require('chai')
 const fs = require('fs')
 const node_path = require('path')
@@ -161,7 +162,7 @@ describe('replacer', () => {
 
   it('replacer this', () => {
     const value = {a: 1}
-    code(value, function (k, v) {
+    code(value, k => {
       if (!k) {
         expect(this).to.deep.equal({'': value})
       }

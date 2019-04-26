@@ -1,71 +1,13 @@
 const {isArray, isRegExp, isFunction} = require('core-util-is')
-const {isNumberString, createOptions} = require('./options')
+const {
+  isNumberString, createOptions, QUOTE, EMPTY, SPACE
+} = require('./options')
+const applyReplacer = require('./replacer')
 
 const PRE_CURLY_BRACKET = '{'
 const SUF_CURLY_BRACKET = '}'
 const PRE_BRACKET = '['
 const SUF_BRACKET = ']'
-
-function apply_replacer (value, replacer) {
-  if (typeof replacer === 'function') {
-    const input = {
-      '': value
-    }
-    return apply_function_replacer(input, replacer)['']
-  }
-
-  if (
-    isArray(replacer)
-    // Array replacer only works for plain object
-    && is_plain_object(value)
-  ) {
-    return apply_function_replacer(value, (k, v) => ~ replacer.indexOf(k)
-      ? v
-      : undefined)
-  }
-
-  return value
-}
-
-
-function apply_function_replacer (value, replacer) {
-  if (isArray(value)) {
-    return apply_array_function_replacer(value, replacer)
-  }
-
-  if (is_plain_object(value)) {
-    return apply_object_function_replacer(value, replacer)
-  }
-
-  return value
-}
-
-
-function apply_array_function_replacer (value, replacer) {
-  return value.map((v, i) => {
-    v = replacer.call(value, i, v)
-    return apply_function_replacer(v, replacer)
-  })
-}
-
-
-function apply_object_function_replacer (value, replacer) {
-  let k
-  let v
-  for (k in value) {
-    v = value[k]
-    v = replacer.call(value, k, v)
-
-    if (v === undefined) {
-      delete value[k]
-      continue
-    }
-
-    value[k] = apply_function_replacer(v, replacer)
-  }
-
-  return value
-}
 
 const STRINGIFY = Symbol.for('code.stringify.custom')
 
@@ -89,7 +31,6 @@ const CODE_STRINGIFY_CUSTOM = {
   }
 }
 
-const EMPTY = ''
 const REGEX_IS_VALID_KEY_STRING = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/
 
 class Stringifier {
@@ -112,15 +53,23 @@ class Stringifier {
   }
 
   stringify (value, indent = EMPTY) {
+    const {
+      replacer
+    } = this._options
 
+    if (replacer) {
+      value = applyReplacer(value, replacer)
+    }
+
+    return this._stringify(value, indent)
   }
 
   _check (value, indent) {
-    if (this._codec.length === 0) {
+    if (this._stringifiers.length === 0) {
       return
     }
 
-    const found = this._codec.find(({test}) => test(value))
+    const found = this._stringifiers.find(({test}) => test(value))
     if (!found) {
       return
     }
@@ -210,7 +159,7 @@ class Stringifier {
 
       ? `\n${indent}`
       // [value
-      : ''
+      : EMPTY
 
     const preJoiner = sufJoiner + space
     const code = slices.join(`,${preJoiner}`)
@@ -256,7 +205,7 @@ class Stringifier {
   object (object, indent) {
     const {space} = this._options
     const keyValueJoiner = space
-      ? ' '
+      ? SPACE
       : EMPTY
 
     const slices = []
@@ -282,14 +231,10 @@ const stringify = (value, replacer, space, indent) =>
   .register(CODE_STRINGIFY_CUSTOM)
   .stringify(value, indent)
 
-// space = make_sure_spaces(space)
-// indent = make_sure_spaces(indent)
-// value = apply_replacer(value, replacer)
-
-// return code_stringify(value, space, indent)
-
 stringify.Code = Code
 
-stringify.QUOTE = `'`
+stringify.QUOTE = QUOTE
 
 stringify.Stringifier = Stringifier
+
+module.exports = stringify
