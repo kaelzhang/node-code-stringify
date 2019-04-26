@@ -72,7 +72,7 @@ const createOptions = ({
   detectCircular = false,
   quote = QUOTE,
   useNumberKey = true
-}) => {
+} = {}) => {
   const ret = {
     replacer,
     space,

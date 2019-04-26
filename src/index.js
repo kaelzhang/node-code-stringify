@@ -10,25 +10,25 @@ const SUF_CURLY_BRACKET = '}'
 const PRE_BRACKET = '['
 const SUF_BRACKET = ']'
 
-const STRINGIFY = Symbol.for('code.stringify.custom')
+const STRINGIFY_SYMBOL = Symbol.for('code.stringify.custom')
 
 class Code {
   constructor (code) {
     this._code = code
   }
 
-  [STRINGIFY] () {
+  [STRINGIFY_SYMBOL] () {
     return this._code
   }
 }
 
 const CODE_STRINGIFY_CUSTOM = {
   test (value) {
-    return value && isFunction(value[STRINGIFY])
+    return value && isFunction(value[STRINGIFY_SYMBOL])
   },
 
   stringify (value) {
-    return value[STRINGIFY]()
+    return value[STRINGIFY_SYMBOL]()
   }
 }
 
@@ -71,7 +71,7 @@ class Stringifier {
 
     const {stringify: s} = found
     return {
-      code: s(value, indent, this._options)
+      code: s.call(this, value, indent, this._options)
     }
   }
 
@@ -229,6 +229,7 @@ const stringify = (value, replacer, space, indent) =>
 module.exports = stringify
 
 stringify.Code = Code
+stringify.STRINGIFY_SYMBOL = STRINGIFY_SYMBOL
 stringify.CODE_STRINGIFY_CUSTOM = CODE_STRINGIFY_CUSTOM
 stringify.QUOTE = QUOTE
 stringify.Stringifier = Stringifier

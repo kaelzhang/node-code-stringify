@@ -133,6 +133,14 @@ module.exports = {
 
 > Advanced Section
 
+```js
+const {
+  Stringifier,
+  STRINGIFY_SYMBOL,
+  CODE_STRINGIFY_CUSTOM
+} = require('code-stringify')
+```
+
 ## new Stringifier(options)
 
 > new in 2.0.0
@@ -163,6 +171,23 @@ new Stringifier({
 - **indent?** `(number | string)=0`
 
 Returns the JavaScript code string.
+
+### stringifier.register(customStringifier): this
+
+- **customStringifier** `CustomStringifier`
+
+```ts
+interface CustomStringifier {
+  //
+  test: Function (subject): boolean
+  stringify: Function(subject, indent, options): string
+}
+```
+
+Register a custom stringifier for certain data type.
+
+
+### Utility methods
 
 ## Known Issues
 

@@ -6,6 +6,8 @@ const {expect} = require('chai')
 const fs = require('fs')
 const node_path = require('path')
 
+const {Stringifier, STRINGIFY_SYMBOL} = code
+
 const obj = {
   0: 1,
   2: 1,
@@ -55,12 +57,29 @@ describe('code.Code', () => {
       )
     ).to.equal('[_1,_2,_3]')
   })
+
+  it('with custom STRINGIFY_SYMBOL', () => {
+    const exp = 'wakakaka'
+
+    expect(
+      code({
+        [STRINGIFY_SYMBOL] () {
+          return exp
+        }
+      })
+    ).to.equal(exp)
+  })
 })
 
 describe('primitive types', () => {
   it('number', () => {
     const a = 1
     expect(code(a)).to.equal('1')
+  })
+
+  it('null', () => {
+    const a = null
+    expect(code(a)).to.equal('null')
   })
 
   describe('string', () => {
@@ -176,5 +195,32 @@ describe('replacer', () => {
   it('array with array replacer', () => {
     const value = ['a', 'b']
     expect(code(value, [1])).to.equal("['a','b']")
+  })
+})
+
+describe('new Stringifier', () => {
+  it('no custom stringifier', () => {
+    const s = new Stringifier()
+    const ss = s.stringify({1: 1})
+    expect(ss).to.equal('{1:1}')
+  })
+
+  it('double quote', () => {
+    const s = new Stringifier({
+      quote: '"'
+    })
+    const ss = s.stringify('a')
+    expect(ss).to.equal('"a"')
+  })
+
+  it('string space', () => {
+    const s = new Stringifier({
+      space: '  '
+    })
+    const ss = s.stringify([1, '2'])
+    expect(ss).to.equal(`[
+  1,
+  '2'
+]`)
   })
 })
