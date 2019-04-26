@@ -24,7 +24,9 @@ npm i code-stringify
 ## Usage
 
 ```js
+const fs = require('fs')
 const stringify = require('code-stringify')
+
 const obj = {
   '0': 1,
   'a': function(n){return n;},
@@ -32,12 +34,10 @@ const obj = {
   'c-d': 3
 }
 
-const fs = require('fs')
-
 // So you can use code-stringify to save your javascript variables into a file:
 fs.writeFileSync(
   'output.js',
-  'module.exports = ' + stringify(a, null, 2)
+  `module.exports = ${stringify(obj, null, 2)}`
 )
 ```
 
@@ -46,13 +46,13 @@ Then 'output.js' will look like:
 ```js
 module.exports = {
   0: 1,
-  a: function (n){return n;},
+  a: function(n){return n;},
   b: 1,
-  "c-d": 3
+  'c-d': 3
 }
 ```
 
-## stringify(subject, replacer, space, indent)
+## stringify(subject, replacer, space, indent): string
 
 ##### subject `any`
 
@@ -92,7 +92,7 @@ The code indent for the entire subject. If `indent === 4`, then the content of t
       0: 1,
       a: function (n){return n;},
       b: 1,
-      "c-d": 3
+      'c-d': 3
     }
 ```
 
@@ -103,7 +103,7 @@ We could use `new code.Code(code_string)` to define an already-stringified prope
 So, see the example below:
 
 ```js
-let output = `module.exports = ${stringify({
+const output = `module.exports = ${stringify({
   a: 1,
   'foo-bar': 2,
   foo: new stringify.Code('(function(a){return a})(3)')

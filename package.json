@@ -1,6 +1,6 @@
 {
   "name": "code-stringify",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "code-stringify is node.js module that converts JavaScript variables into source codes. Unlike JSON.stringify, code-stringify converts things into strings of code, not JSON.",
   "main": "src/index.js",
   "scripts": {
